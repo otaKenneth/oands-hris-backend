@@ -14,7 +14,10 @@ return new class extends Migration
         Schema::create('employee_shifts', function (Blueprint $table) {
             $table->id();
             $table->foreignId('employee_id')->constrained('employees')->onDelete('cascade');
+            $table->foreignId('business_id')->constrained('businesses')->onDelete('cascade');
             $table->foreignId('shift_id')->constrained('shifts')->onDelete('cascade');
+            $table->date('effective_from');
+            $table->date('effective_to')->nullable();
             $table->timestamps();
         });
     }
