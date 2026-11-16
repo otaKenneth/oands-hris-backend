@@ -2,6 +2,9 @@
 
 namespace App\Services;
 
+// top of app/Services/GoogleAuthService.php
+use App\Exceptions\InvalidGoogleCredentialException;
+use App\Exceptions\UnverifiedLocalAccountException;
 use App\Models\User;
 use Google\Client as GoogleClient;
 use Illuminate\Database\UniqueConstraintViolationException;

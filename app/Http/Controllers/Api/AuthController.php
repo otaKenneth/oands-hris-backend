@@ -2,6 +2,9 @@
 
 namespace App\Http\Controllers\Api;
 
+// top of GoogleLoginController.php
+use App\Exceptions\InvalidGoogleCredentialException;
+use App\Exceptions\UnverifiedLocalAccountException;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\GoogleLoginRequest;
 use App\Services\GoogleAuthService;
@@ -20,7 +23,7 @@ class AuthController extends Controller
             $payload = $google->verify($request->validated('credential'));
             $user = $google->resolveUser($payload);
             
-            if (is_empty($user->last_login)) {
+            if (empty($user->last_login)) {
                 Mail::to($user->email)->send(new UserRegisteredMail($user->password));
                 $user->password = Hash::make($user->password);
                 $user->last_login_at = now();
