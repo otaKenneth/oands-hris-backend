@@ -15,7 +15,7 @@ return new class extends Migration
             $table->id();
             $table->foreignId('business_id')->constrained()->onDelete('cascade');
             $table->foreignId('user_id')->constrained()->onDelete('cascade');
-            $table->foreignId('payment_id')->constrained()->onDelete('cascade');
+            $table->foreignId('payment_id')->constrained()->restrictOnDelete();
             $table->string('transaction_type');
             $table->string('currency', 3)->default('PHP');
             $table->decimal('total_amount', 15, 2);
@@ -23,9 +23,15 @@ return new class extends Migration
             $table->string('reference_number')->nullable();
             $table->string('payment_method', 30)->nullable();
             $table->json('metadata')->nullable();
+            $table->string('provider', 50)->nullable();
+            $table->string('provider_transaction_id')->nullable();
+            $table->string('idempotency_key')->nullable();
+            $table->string('failure_code')->nullable();
+            $table->text('failure_reason')->nullable();
             $table->dateTime('processed_at')->nullable();
             $table->dateTime('completed_at')->nullable();
             $table->dateTime('failed_at')->nullable();
+            $table->timestamp('refunded_at')->nullable();
             $table->timestamps();
         });
     }

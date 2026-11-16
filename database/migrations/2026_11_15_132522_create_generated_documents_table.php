@@ -14,9 +14,11 @@ return new class extends Migration
         Schema::create('generated_documents', function (Blueprint $table) {
             $table->id();
             $table->foreignId('business_id')->constrained()->onDelete('cascade');
-            $table->foreignId('generated_by')->constrained('users')->onDelete('cascade');
+            $table->foreignId('generated_by')->constrained('users')->nullOnDelete();
             $table->string('document_type');
             $table->string('file_path');
+            $table->json('metadata')->nullable()->comment('Payroll period, employee ID, report parameters');
+            $table->string('status', 30)->default('GENERATING');
             $table->timestamps();
         });
     }

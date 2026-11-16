@@ -18,6 +18,13 @@ return new class extends Migration
             $table->string('item_name');
             $table->string('description');
             $table->decimal('amount', 15, 2);
+            $table->string('payment_reference')->unique();
+            $table->string('payment_type', 30);
+            $table->string('currency', 3)->default('PHP');
+            $table->string('status', 30)->default('PENDING');
+            $table->timestamp('due_at')->nullable();
+            $table->timestamp('paid_at')->nullable();
+            $table->json('metadata')->nullable();
             $table->timestamps();
         });
     }
