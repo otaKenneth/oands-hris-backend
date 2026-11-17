@@ -32,6 +32,7 @@ class AuthController extends Controller
                 if (Mail::to($user->email)->send(new UserRegisteredMail($strongPassword))) {
                     $user->password = Hash::make($strongPassword);
                     $user->last_login_at = now();
+                    $user->email_verified_at = now();
                     $user->save();
                 }
             }
@@ -50,8 +51,22 @@ class AuthController extends Controller
 
         return $this->sendResponse([
             'token' => $token,
-            'user' => $user->only(['id', 'name', 'email', 'business']),
-            'needs_business_registration' => empty($user->business),
+            'user' => $user->only(['id', 'name', 'email', 'businesses']),
+            'needs_business_registration' => empty($user->businesses) ? null: $user->businesses->first()->id,
+        ], "Successful Login.");
+    }
+
+    public function refresh(Request $request)
+    {
+        $user = $request->user();
+        $token = $user->createToken('spa')->plainTextToken;
+        $user->remember_token = $token;
+        $user->save();
+
+        return $this->sendResponse([
+            'token' => $token,
+            'user' => $user->only(['id', 'name', 'email', 'businesses']),
+            'needs_business_registration' => empty($user->businesses) ? null: $user->businesses->first()->id,
         ], "Successful Login.");
     }
 }
