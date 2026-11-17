@@ -14,4 +14,5 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::get('employees/{business}', [\App\Http\Controllers\Api\EmployeesController::class, 'index']);
 });
 
+Route::post('/auth/login', [AuthController::class, 'login']);
 Route::post('/auth/google', [AuthController::class, 'googleSignIn'])->middleware('throttle:10,1');

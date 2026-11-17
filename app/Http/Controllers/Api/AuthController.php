@@ -49,10 +49,39 @@ class AuthController extends Controller
             ], 409);
         }
 
+        $business = null;
+        if (!empty($user->businesses)) {
+            $business = $user->businesses->first();
+        }
+
         return $this->sendResponse([
             'token' => $token,
             'user' => $user->only(['id', 'name', 'email', 'businesses']),
-            'needs_business_registration' => empty($user->businesses) ? null: $user->businesses->first()->id,
+            'needs_business_registration' => $business,
+        ], "Successful Login.");
+    }
+
+    public function login(Request $request)
+    {
+        $request->validate([
+            'email' => 'required|email',
+            'password' => 'required|string',
+        ]);
+
+        $user = \App\Models\User::where('email', $request->email)->first();
+
+        if (!$user || !Hash::check($request->password, $user->password)) {
+            return response()->json(['message' => 'Invalid credentials.'], 401);
+        }
+
+        $token = $user->createToken('spa')->plainTextToken;
+        $user->remember_token = $token;
+        $user->save();
+
+        return $this->sendResponse([
+            'token' => $token,
+            'user' => $user->only(['id', 'name', 'email', 'businesses']),
+            'needs_business_registration' => empty($user->businesses) ? null : $user->businesses->first()->id,
         ], "Successful Login.");
     }
 
