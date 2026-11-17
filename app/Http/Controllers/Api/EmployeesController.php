@@ -41,4 +41,43 @@ class EmployeesController extends Controller
 
         return $this->sendResponse($response, 'Employees retrieved successfully.');
     }
+
+    public function store(Request $request, Business $business)
+    {
+        $validatedData = $request->validate([
+            'first_name' => 'required|string|max:255',
+            'last_name' => 'required|string|max:255',
+            'middle_name' => 'nullable|string|max:255',
+            'suffix' => 'nullable|string|max:255',
+            'email' => 'required|email|max:255|unique:employees,email',
+            'phone' => 'nullable|string|max:20',
+        ]);
+
+        $business->employees()->create($validatedData);
+
+        return $this->sendResponse($employee, 'Employee created successfully.');
+    }
+
+    public function update(Request $request, Business $business, Employees $employee)
+    {
+        $validatedData = $request->validate([
+            'first_name' => 'required|string|max:255',
+            'last_name' => 'required|string|max:255',
+            'middle_name' => 'nullable|string|max:255',
+            'suffix' => 'nullable|string|max:255',
+            'email' => 'required|email|max:255|unique:employees,email',
+            'phone' => 'nullable|string|max:20',
+        ]);
+
+        $employee->update($validatedData);
+
+        return $this->sendResponse($employee, 'Employee updated successfully.');
+    }
+
+    public function destroy(Business $business, Employees $employee)
+    {
+        $employee->delete();
+
+        return $this->sendResponse(null, 'Employee deleted successfully.');
+    }
 }
