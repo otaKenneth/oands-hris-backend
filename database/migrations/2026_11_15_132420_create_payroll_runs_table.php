@@ -23,7 +23,7 @@ return new class extends Migration
             $table->decimal('total_gross_pay', 15, 2);
             $table->decimal('total_deductions', 15, 2);
             $table->decimal('total_net_pay', 15, 2);
-            $table->foreignId('generated_by')->constrained('users')->nullOnDelete();
+            $table->foreignId('generated_by')->nullable()->constrained('users')->nullOnDelete();
             $table->foreignId('approved_by')->nullable()->constrained('users')->nullOnDelete();
             $table->timestamp('approved_at')->nullable();
             $table->timestamp('finalized_at')->nullable();

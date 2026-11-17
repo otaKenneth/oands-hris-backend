@@ -13,7 +13,11 @@ return new class extends Migration
     {
         Schema::create('statutory_contribution_brackets', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('statutory_contribution_table_id')->constrained()->cascadeOnDelete();
+            $table->unsignedBigInteger('statutory_contribution_table_id');
+            $table->foreign('statutory_contribution_table_id', 'scb_contribution_table_fk')
+                ->references('id')
+                ->on('statutory_contribution_tables')
+                ->cascadeOnDelete();
             $table->decimal('salary_min', 15, 2);
             $table->decimal('salary_max', 15, 2)->nullable();
             $table->decimal('monthly_salary_credit', 15, 2)->nullable();

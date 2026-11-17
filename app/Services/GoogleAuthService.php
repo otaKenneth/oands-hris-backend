@@ -9,7 +9,7 @@ use App\Models\User;
 use Google\Client as GoogleClient;
 use Illuminate\Database\UniqueConstraintViolationException;
 use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Str;
+use Carbon\Carbon;
 
 class GoogleAuthService
 {
@@ -63,13 +63,11 @@ class GoogleAuthService
                 throw new UnverifiedLocalAccountException();
             }
 
-            $password = Str::random('12');
-
             $user ??= User::create([
                 'name'              => $p['name'] ?? $email,
                 'email'             => $email,
-                'password'          => $password,
-                'email_verified_at' => now(),
+                'password'          => "password:2026",
+                'email_verified_at' => Carbon::now(),
                 'provider'         => 'google',
                 'google_id' => $p['sub'],
             ]);

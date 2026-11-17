@@ -11,6 +11,7 @@ use App\Services\GoogleAuthService;
 use Illuminate\Support\Facades\Mail;
 use App\Mail\UserRegisteredMail;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Str;
 use Illuminate\Http\Request;
 
 class AuthController extends Controller
@@ -24,10 +25,15 @@ class AuthController extends Controller
             $user = $google->resolveUser($payload);
             
             if (empty($user->last_login)) {
-                Mail::to($user->email)->send(new UserRegisteredMail($user->password));
-                $user->password = Hash::make($user->password);
-                $user->last_login_at = now();
-                $user->save();
+                logger()->info("Password: {$user->password} for user {$user->email}");
+                $strongPassword = Str::random('12');
+                logger()->info("Password: {$strongPassword} for user {$user->email}");
+                // if mail is sent successfully, hash the password and save it to the user record
+                if (Mail::to($user->email)->send(new UserRegisteredMail($strongPassword))) {
+                    $user->password = Hash::make($strongPassword);
+                    $user->last_login_at = now();
+                    $user->save();
+                }
             }
             
             $token = $user->createToken('spa')->plainTextToken;
@@ -45,7 +51,7 @@ class AuthController extends Controller
         return $this->sendResponse([
             'token' => $token,
             'user' => $user->only(['id', 'name', 'email', 'business']),
-            'needs_business_registration' => $user->business->id === null,
+            'needs_business_registration' => empty($user->business),
         ], "Successful Login.");
     }
 }

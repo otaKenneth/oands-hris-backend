@@ -15,7 +15,7 @@ return new class extends Migration
             $table->id();
             $table->foreignId('business_id')->constrained()->onDelete('cascade');
             $table->foreignId('user_id')->constrained()->onDelete('cascade');
-            $table->foreignId('generated_document_id')->constrained()->nullOnDelete();
+            $table->foreignId('generated_document_id')->nullable()->constrained()->nullOnDelete();
             $table->string('recipient_email');
             $table->string('subject');
             $table->string('status', 30)->default('QUEUED');

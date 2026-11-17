@@ -19,7 +19,7 @@ return new class extends Migration
             $table->date('end_date');
             $table->string('status', 30);
             $table->foreignId('created_by')->nullable()->constrained('users')->nullOnDelete();
-            $table->foreignId('approved_by')->constrained('users')->nullOnDelete();
+            $table->foreignId('approved_by')->nullable()->constrained('users')->nullOnDelete();
             $table->dateTime('approved_at')->nullable();
             $table->timestamps();
         });
