@@ -4,19 +4,34 @@ namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
+use App\Models\Business;
+use Illuminate\Support\Facades\DB;
 
 class BusinessController extends Controller
 {
     public function index(Request $request)
     {
+        $perPage = max(1, min((int) $request->input('itemsPerPage', 10), 100));
         $user = $request->user();
-        $businesses = $user->businesses;
+        $businesses = Business::with(['user' => function ($query) {
+            return $query->select('id', 'email');
+        }])->where('user_id', $user->id);
 
-        if (!$businesses) {
-            return response()->json(['message' => 'Businesses not found.'], 404);
+        $response = $businesses->paginate($perPage)->withQueryString();
+
+        return $this->sendResponse($response, "Businesses retrieved successfully.");
+    }
+
+    public function show(Request $request)
+    {
+        $user = $request->user();
+        $business = $user->business()->select('name');
+        
+        if (!$business) {            
+            return $this->sendError("Businesses not found", 404);
         }
 
-        return $this->sendResponse($businesses, "Businesses retrieved successfully.");
+        return $this->sendResponse($busines, "Businesses retrieved successfully.");
     }
 
     public function store(Request $request)
@@ -31,9 +46,19 @@ class BusinessController extends Controller
             // Add other fields as necessary
         ]);
 
-        $business = $user->businesses()->create($validatedData);
-
-        return $this->sendResponse($business, "Business created successfully.");
+        try {
+            DB::beginTransaction();
+            $business = $user->businesses()->create($validatedData);
+            $business->userRole()->create([
+                'user_id' => $user->id,
+                'role' => 'owner'
+            ]);
+            DB::commit();
+            return $this->sendResponse($business, "Business created successfully.");
+        } catch (\Exception $e) {
+            DB::rollback();
+            return $this->sendError($e->getMessage(), [], 500);
+        }
     }
 
     public function update(Request $request, $id)

@@ -35,4 +35,9 @@ class User extends Authenticatable
     {
         return $this->hasMany(Business::class);
     }
+
+    public function businessRole()
+    {
+        return $this->hasOne(BusinessUserRole::class);
+    }
 }

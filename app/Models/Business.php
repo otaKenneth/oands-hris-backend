@@ -19,6 +19,11 @@ class Business extends Model
         return $this->belongsTo(User::class);
     }
 
+    public function userRole()
+    {
+        return $this->hasMany(BusinessUserRole::class);
+    }
+
     public function employees()
     {
         return $this->hasMany(Employees::class);
