@@ -13,6 +13,8 @@ return new class extends Migration
     {
         Schema::create('shifts', function (Blueprint $table) {
             $table->id();
+            $table->foreignId('user_id')->constrained()->onDelete('cascade');
+            $table->foreignId('business_id')->constrained()->cascadeOnDelete();
             $table->string('code');
             $table->text('description');
             $table->integer('day_of_week');
@@ -21,6 +23,8 @@ return new class extends Migration
             $table->time('break_in');
             $table->time('break_out');
             $table->boolean('allow_break')->default(true);
+            $table->boolean('is_flexible')->default(false);
+            $table->boolean('is_general_shift')->default(false);
             $table->timestamps();
         });
     }

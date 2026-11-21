@@ -28,4 +28,9 @@ class Business extends Model
     {
         return $this->hasMany(Employees::class);
     }
+
+    public function shifts()
+    {
+        return $this->hasMany(Shift::class);
+    }
 }

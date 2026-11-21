@@ -1,0 +1,55 @@
+<?php
+
+namespace App\Http\Controllers\Api;
+
+use App\Http\Controllers\Controller;
+use App\Models\Business;
+use App\Models\Shift;
+use Illuminate\Http\Request;
+
+class ShiftsController extends Controller
+{
+    public function index(Request $request, Business $business)
+    {
+        $user_id = $request->user()->id;
+        $perPage = max(1, min((int) $request->input('itemsPerPage', 10), 100));
+        
+        if (!$business) {
+            return $this->sendError("This function does not belong to this business.", [], 404);
+        }
+
+        $shifts = Shift::where('business_id', $business->id)
+            ->orWhere(function ($query) use ($user_id) {
+                return $query->where('user_id', $user_id)
+                ->where('is_general_shift', true);
+            })
+            ->orderBy($request->input('sortBy', 'created_at'), $request->input('sortOrder', 'desc'));
+
+        $response = $shifts->paginate($perPage)->withQueryString();
+
+        return $this->sendResponse($response, "");
+    }
+
+    public function store(Request $request, Business $business) {
+        $validatedData = $request->validate([
+            'code' => 'required|string',
+            'description' => 'nullable|string',
+            'day_of_week' => 'required',
+            'clock_in' => 'required',
+            'clock_out' => 'required',
+            'break_in' => 'nullable',
+            'break_out' => 'nullable',
+            'allow_break' => 'required',
+            'is_general_shift' => 'required'
+        ]);
+
+        $user_id = $request->user()->id;
+
+        $shift = $business->shifts()->create([
+            'user_id' => $user_id,
+            ...$validatedData
+        ]);
+
+        $this->sendResponse($shift, "");
+    }
+}

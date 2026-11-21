@@ -12,6 +12,7 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::post('/auth/refresh', [AuthController::class, 'refresh']);
     Route::resource('business', \App\Http\Controllers\Api\BusinessController::class);
     Route::get('employees/{business}', [\App\Http\Controllers\Api\EmployeesController::class, 'index']);
+    Route::get('shifts/{business}', [\App\Http\Controllers\Api\ShiftsController::class, 'index']);
 });
 
 Route::post('/auth/login', [AuthController::class, 'login']);

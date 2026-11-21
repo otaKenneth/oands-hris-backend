@@ -35,7 +35,7 @@ class EmployeesController extends Controller
                         ->orWhere('email', 'like', "%$search%");
                 });
             })
-            ->orderBy($request->get('sortBy', 'created_at'), $request->get('sortOrder', 'desc'));
+            ->orderBy($request->input('sortBy', 'created_at'), $request->input('sortOrder', 'desc'));
         
         $response = $employees->paginate($perPage)->withQueryString();
 
@@ -53,7 +53,7 @@ class EmployeesController extends Controller
             'phone' => 'nullable|string|max:20',
         ]);
 
-        $business->employees()->create($validatedData);
+        $employee = $business->employees()->create($validatedData);
 
         return $this->sendResponse($employee, 'Employee created successfully.');
     }
