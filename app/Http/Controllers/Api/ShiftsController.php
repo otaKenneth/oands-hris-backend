@@ -72,4 +72,16 @@ class ShiftsController extends Controller
 
         return $this->sendResponse($shifts, "Success");
     }
+
+    public function showShiftDetail(Request $request) 
+    {
+        $code = $request->input('code');
+        $user_id = $request->user()->id;
+        
+        $shifts = Shift::where('user_id', $user_id)
+            ->where('code', $code)
+            ->get();
+
+        return $this->sendResponse($shifts, "Success");
+    }
 }
