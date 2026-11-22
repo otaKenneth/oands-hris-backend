@@ -16,12 +16,12 @@ return new class extends Migration
             $table->foreignId('user_id')->constrained()->onDelete('cascade');
             $table->foreignId('business_id')->constrained()->cascadeOnDelete();
             $table->string('code');
-            $table->text('description');
+            $table->text('description')->nullabe();
             $table->integer('day_of_week');
             $table->time('clock_in');
             $table->time('clock_out');
-            $table->time('break_in');
-            $table->time('break_out');
+            $table->time('break_in')->nullable();
+            $table->time('break_out')->nullable();
             $table->boolean('allow_break')->default(true);
             $table->boolean('is_flexible')->default(false);
             $table->boolean('is_general_shift')->default(false);

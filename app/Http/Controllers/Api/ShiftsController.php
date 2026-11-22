@@ -45,11 +45,15 @@ class ShiftsController extends Controller
 
         $user_id = $request->user()->id;
 
-        $shift = $business->shifts()->create([
+        $arr_insert_shift = [
             'user_id' => $user_id,
             ...$validatedData
-        ]);
+        ];
+        foreach ($request->input('day_of_week') as $day_of_week => $string_value) {
+            $arr_insert_shift['day_of_week'] = $day_of_week;
+            $shift = $business->shifts()->create($arr_insert_shift);
+        }
 
-        $this->sendResponse($shift, "");
+        $this->sendResponse($shift, "Successful create shift.");
     }
 }
