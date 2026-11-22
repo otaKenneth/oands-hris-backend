@@ -56,4 +56,20 @@ class ShiftsController extends Controller
 
         $this->sendResponse($shift, "Successful create shift.");
     }
+
+    public function getShiftsForSelection(Request $request, Business $business)
+    {
+        $user_id = $request->user()->id;
+
+        $shifts = Shift::select(['code'])
+            ->where('business_id', $business->id)
+            ->orWhere(function ($query) use ($user_id) {
+                return $query->where('user_id', $user_id)
+                ->where('is_general_shift', true);
+            })
+            ->groupBy('code')
+            ->get();
+
+        return $this->sendResponse($shifts, "Success");
+    }
 }
