@@ -61,16 +61,19 @@ class ShiftsController extends Controller
     {
         $user_id = $request->user()->id;
 
-        $shifts = Shift::select(['code'])
-            ->where('business_id', $business->id)
+        $shifts = Shift::where('business_id', $business->id)
             ->orWhere(function ($query) use ($user_id) {
                 return $query->where('user_id', $user_id)
                 ->where('is_general_shift', true);
-            })
-            ->groupBy('code')
-            ->get();
+            });
 
-        return $this->sendResponse($shifts, "Success");
+        $shift_clone = clone $shifts;
+        $shift_clone->select(['code'])->groupBy('code');
+
+        return $this->sendResponse([
+            'array' => $shift_clone->get(),
+            'select' => $shifts->first()
+        ], "Success");
     }
 
     public function showShiftDetail(Request $request) 
